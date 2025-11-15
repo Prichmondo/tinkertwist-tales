@@ -1,0 +1,32 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import styles from '../index.module.css';
+
+// This generates a page for each city
+export async function getStaticPaths() {
+  const locations = await getCollection('locations');
+  const events = await getCollection('events');
+  return locations.map((location) => ({
+    params: { slug: location.id },
+    props: { location, events: events.filter((event) => event.data.location === location.id) },
+  }));
+}
+
+const { location, events } = Astro.props;
+const { Content } = await render(location);
+---
+
+<Layout>
+	<main>
+		<h1 class={styles.title}>{location.data.name}</h1>
+		<Content />
+    {events.map((event) => (
+      <article>
+        <span>{event.data.date.toDateString()}</span>
+        <h2>{event.data.title}</h2>
+        <p>{event.body}</p>
+      </article>
+    ))}
+	</main>
+</Layout>
