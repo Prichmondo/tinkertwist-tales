@@ -1,0 +1,18 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import { AdventureMap } from './map';
+
+const locations = await getCollection('locations');
+const mapLocations = locations.map((location) => ({
+  id: location.id,
+  x: location.data.longitude,
+  y: location.data.latitude,
+  name: location.data.name,
+  thumbnail: location.data.image,
+}));
+---
+
+<Layout>
+	<AdventureMap client:only mapLocations={mapLocations} />
+</Layout>

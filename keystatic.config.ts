@@ -52,13 +52,11 @@ const locations = collection({
     }),
     latitude: fields.number({ 
       label: 'Latitude',
-      description: 'e.g., 40.7128',
-      validation: { min: -90, max: 90 }
+      description: 'e.g., 40.7128'
     }),
     longitude: fields.number({ 
       label: 'Longitude',
-      description: 'e.g., -74.0060',
-      validation: { min: -180, max: 180 }
+      description: 'e.g., -74.0060'
     }),
     content: fields.markdoc({
       label: 'Description',
