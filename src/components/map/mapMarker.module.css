@@ -1,0 +1,24 @@
+.mapMarker {
+    z-index: 1;
+    position: absolute;
+    transform: translate(-50%, -100%);
+    cursor: pointer;
+}
+
+.mapMarker .thumbnail {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    left: 3px;
+    top: 3px;
+    position: absolute;
+    background-size: cover;
+    z-index: 1;
+}
+
+.mapMarker svg {
+    display: block;
+    z-index: 0;
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+}

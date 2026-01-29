@@ -1,5 +1,3 @@
-import { MapMarker } from "./mapMarker";
-
 export interface MapLocation {
   id: string;
   x: number; // X coordinate on the original map image (in pixels or 0-1 normalized)
@@ -11,6 +9,21 @@ export interface MapLocation {
 interface Coordinates {
   x: number;
   y: number;
+}
+
+export interface MapRenderData {
+  dpr: number;
+  panX: number;
+  panY: number;
+  zoom: number;
+  scale: number;
+  width: number;
+  height: number;
+  coordinates: Coordinates;
+}
+
+export interface OnRenderCallback {
+  (data: MapRenderData): void;
 }
 
 export class CanvasMap {
@@ -33,12 +46,9 @@ export class CanvasMap {
   private lastMouseX: number = 0;
   private lastMouseY: number = 0;
 
-  private locations: MapMarker[] = [];
-  private readonly MARKER_SIZE = 40; // Fixed marker size in pixels
-  private readonly PIN_HEIGHT = 12; // Height of the pin point
+  private handleRender?: OnRenderCallback;
 
-  constructor(canvas: HTMLCanvasElement, mapSrc: string) {
-    console.log(`Initializing CanvasMap with image source: ${mapSrc}`);
+  constructor(canvas: HTMLCanvasElement, mapSrc: string, onRender?: OnRenderCallback) {
     this.canvas = canvas;
     this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D;
   
@@ -46,6 +56,7 @@ export class CanvasMap {
     this.dpr = window.devicePixelRatio || 1;
     this.context.scale(this.dpr, this.dpr);
     this.resizeCanvas();
+    this.handleRender = onRender;
     
     // Enable smoothing
     this.context.imageSmoothingEnabled = true;
@@ -72,18 +83,6 @@ export class CanvasMap {
     this.canvas.removeEventListener('mousedown', this.handleMouseDown.bind(this));    
     this.canvas.removeEventListener('mouseup', this.handleMouseUp.bind(this));
     this.canvas.removeEventListener('mouseleave', this.handleMouseUp.bind(this));
-  }
-
-  // Add locations to the map
-  addLocations(locations: MapLocation[]) {
-    this.locations = [...this.locations, ...locations.map((location) => new MapMarker(this, location))];
-    this.render();
-  }
-
-  // Clear all locations
-  clearLocations() {
-    this.locations = [];
-    this.render();
   }
 
   resizeCanvas() {
@@ -127,8 +126,17 @@ export class CanvasMap {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     // Draw the map image
     this.context.drawImage(this.mapImage, x, y, width, height);
-    // Draw all markers
-    this.locations.forEach(location => location.render());
+
+    this.handleRender?.({
+      dpr: this.dpr,
+      panX: this.panX,
+      panY: this.panY,
+      zoom: this.zoom,
+      scale: this.scale,
+      width: this.canvas.width,
+      height: this.canvas.height,
+      coordinates: this.coordinates,
+    });
   }
 
   handleWheel(e: WheelEvent) {
@@ -161,7 +169,7 @@ export class CanvasMap {
       }
       
       this.updateCursor();
-      console.log(`Zoom: ${(this.zoom * 100).toFixed(0)}%`, `PanX: ${this.panX.toFixed(2)}`, `PanY: ${this.panY.toFixed(2)}`);
+      // console.log(`Zoom: ${(this.zoom * 100).toFixed(0)}%`, `PanX: ${this.panX.toFixed(2)}`, `PanY: ${this.panY.toFixed(2)}`);
       
       this.render();
     }

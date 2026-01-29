@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
-import { AdventureMap } from './map';
+import { AdventureMap } from '../components/map';
 
 const locations = await getCollection('locations');
 const mapLocations = locations.map((location) => ({
