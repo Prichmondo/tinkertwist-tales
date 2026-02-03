@@ -23,6 +23,10 @@ export const AdventureMap = ({ mapLocations }: Props) => {
   }
 
   useEffect(() => {
+    console.log('Map render data updated:', mapRenderData);
+  }, [mapRenderData]);
+
+  useEffect(() => {
     console.log('Mounting AdventureMap component');
     let map: CanvasMap | null = null;
     if (canvasMapRef.current) {

@@ -1,16 +1,11 @@
 import { useEffect, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import styles from './locationModal.module.css';
+import type { IEvent, ILocation } from '../../interfaces';
 
 type LocationData = {
-  id: string;
-  data: {
-    name: string;
-    region: string;
-    image?: string;
-    latitude: number;
-    longitude: number;
-  };
-  body: string;
+  location: ILocation;
+  events: IEvent[];
 };
 
 type Props = {
@@ -79,11 +74,29 @@ export const LocationModal = ({ id }: Props) => {
   }
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>{data.data.name}</h2>
-      <div className={styles.content}>
-        {data.body}
+    <>
+      <div className={styles.headerImage} style={{ backgroundImage: `url(${data.location.data.image})`  }} />
+      <div className={styles.container}>  
+        <h2 className={styles.title}>{data.location.data.name}</h2>
+        <p className={styles.description}>
+          <ReactMarkdown>{data.location.body}</ReactMarkdown>
+        </p>
+        {data.events.length > 0 && (
+          <div className={styles.events}>
+            <h3 className={styles.subtitle}>Main Events</h3>
+            {data.events.map((event) => {
+              return (
+                <article key={event.id} className={styles.event}>
+                  <header>{new Date(event.data.date).toLocaleDateString()} <b className={styles.eventTitle}>{event.data.title}</b></header>
+                  <div className={styles.eventContent}>
+                    <ReactMarkdown>{event.body}</ReactMarkdown>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
       </div>
-    </div>
+    </>
   );
 };

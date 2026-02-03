@@ -1,5 +1,17 @@
 .container {
   min-height: 200px;
+  position: relative;
+  z-index: 1;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.title {
+  font-family: 'Moon Dance', cursive;
+  text-shadow: 3px 1px 7px rgba(0, 0, 0, 1);
+  margin: 0 0 40px 0;
+  font-size: 28px;
+  color: #fff;
 }
 
 .loader {
@@ -29,7 +41,7 @@
 .loader p {
   margin: 0;
   color: #666;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .error {
@@ -48,22 +60,66 @@
   font-size: 14px;
 }
 
-.title {
-  margin: 0 0 20px 0;
-  font-size: 28px;
-  color: #333;
+.description {
+  color: #aaaaaa;
 }
 
-.content {
-  color: #555;
-  line-height: 1.6;
-  font-size: 16px;
+.headerImage {
+  height: 200px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  position: absolute;
+  z-index: 0;
+  top: -60px;
+  left: 0;
+  right: 0;
 }
 
-.content p {
-  margin: 0 0 12px 0;
+.headerImage:after {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  background: #000;
+  height: 20px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
 
-.content p:last-child {
-  margin-bottom: 0;
+.event {
+  --circle-radius: 6px;
+  padding-left: calc((var(--circle-radius) * 2) + 15px);
+  padding-bottom: 50px;
+  position: relative;
+}
+
+.event:after {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 100%;
+  border-left: 1px solid #5e5e5e;
+  border-left-style: dashed;
+  position: absolute;
+  left: var(--circle-radius);
+  top:0;
+  z-index: 0;
+}
+
+.event:before {
+  content: '';
+  display: block;
+  width: calc(var(--circle-radius) * 2);
+  height: calc(var(--circle-radius) * 2);
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-color: #fff;
+  border-radius: 50%;
+  border: 1px solid #fff;
+  box-shadow: inset 0 0 0 3px black;
+  z-index: 1;
 }

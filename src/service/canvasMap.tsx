@@ -53,7 +53,7 @@ export class CanvasMap {
     this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D;
   
     // Handle high-DPI displays
-    this.dpr = window.devicePixelRatio || 1;
+    this.dpr = 1;
     this.context.scale(this.dpr, this.dpr);
     this.resizeCanvas();
     this.handleRender = onRender;
@@ -73,7 +73,12 @@ export class CanvasMap {
     this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
     this.canvas.addEventListener('mouseup', this.handleMouseUp.bind(this));
     this.canvas.addEventListener('mouseleave', this.handleMouseUp.bind(this)); // Stop dragging if mouse leaves canvas
-    
+
+    // Touch events for mobile
+    this.canvas.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
+    this.canvas.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
+    this.canvas.addEventListener('touchend', this.handleDragEnd.bind(this));
+    this.canvas.addEventListener('touchcancel', this.handleDragEnd.bind(this));
   }
 
   dispose() {
@@ -83,6 +88,12 @@ export class CanvasMap {
     this.canvas.removeEventListener('mousedown', this.handleMouseDown.bind(this));    
     this.canvas.removeEventListener('mouseup', this.handleMouseUp.bind(this));
     this.canvas.removeEventListener('mouseleave', this.handleMouseUp.bind(this));
+
+    // Touch events for mobile
+    this.canvas.removeEventListener('touchstart', this.handleTouchStart.bind(this));
+    this.canvas.removeEventListener('touchmove', this.handleTouchMove.bind(this));
+    this.canvas.removeEventListener('touchend', this.handleDragEnd.bind(this));
+    this.canvas.removeEventListener('touchcancel', this.handleDragEnd.bind(this));
   }
 
   resizeCanvas() {
@@ -179,14 +190,14 @@ export class CanvasMap {
     this.canvas.style.cursor = this.zoom > this.MIN_ZOOM ? 'grab' : 'default';
   }
 
-  handleMouseDown(e: MouseEvent) {
+  handleDragStart(e: { clientX: number; clientY: number }) {
     this.isDragging = true;
     this.lastMouseX = e.clientX;
     this.lastMouseY = e.clientY;
     this.canvas.style.cursor = 'grabbing';
   }
 
-  handleMouseMove(e: MouseEvent) {
+  handleDragMove(e: { clientX: number; clientY: number }) {
     if (this.isDragging) {
       const rect = this.canvas.getBoundingClientRect();
       
@@ -204,11 +215,37 @@ export class CanvasMap {
     }
   }
 
-  handleMouseUp() {
+  handleDragEnd() {
     if (this.isDragging) {
       this.isDragging = false;
       this.updateCursor();
     }
+  }
+
+  handleMouseDown(e: MouseEvent) {
+    this.handleDragStart(e);
+  }
+
+  handleTouchStart(e: TouchEvent) {
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      this.handleDragStart({ clientX: touch.clientX, clientY: touch.clientY });
+    }
+  }
+
+  handleMouseMove(e: MouseEvent) {
+    this.handleDragMove(e);
+  }
+
+  handleTouchMove(e: TouchEvent) {
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      this.handleDragMove({ clientX: touch.clientX, clientY: touch.clientY });
+    }
+  }
+
+  handleMouseUp() {
+    this.handleDragEnd();
   }
 
 
